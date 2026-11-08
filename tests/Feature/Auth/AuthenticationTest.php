@@ -3,54 +3,56 @@
 use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 
-test('login screen can be rendered', function () {
-    $response = $this->get(route('login'));
-
-    $response->assertOk();
-});
-
-test('users can authenticate using the login screen', function () {
+test('users can log in through the SPA endpoint', function () {
     $user = User::factory()->create();
 
-    $response = $this->post(route('login.store'), [
-        'email' => $user->email,
-        'password' => 'password',
-    ]);
+    $this->withHeaders(spaHeaders())
+        ->postJson('/login', ['email' => $user->email, 'password' => 'password'])
+        ->assertOk();
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->assertAuthenticatedAs($user);
 });
 
-test('users can not authenticate with invalid password', function () {
+test('users can not log in with an invalid password', function () {
     $user = User::factory()->create();
 
-    $this->post(route('login.store'), [
-        'email' => $user->email,
-        'password' => 'wrong-password',
-    ]);
+    $this->withHeaders(spaHeaders())
+        ->postJson('/login', ['email' => $user->email, 'password' => 'wrong-password'])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('email');
 
     $this->assertGuest();
 });
 
-test('users can logout', function () {
+test('users can log out', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->post(route('logout'));
+    $this->actingAs($user)->withHeaders(spaHeaders())->postJson('/logout')->assertNoContent();
 
-    $response->assertRedirect(route('home'));
-
-    $this->assertGuest();
+    $this->assertGuest('web');
 });
 
-test('users are rate limited', function () {
+test('login attempts are rate limited', function () {
     $user = User::factory()->create();
 
     RateLimiter::increment(md5('login'.implode('|', [$user->email, '127.0.0.1'])), amount: 5);
 
-    $response = $this->post(route('login.store'), [
-        'email' => $user->email,
-        'password' => 'wrong-password',
-    ]);
+    $this->withHeaders(spaHeaders())
+        ->postJson('/login', ['email' => $user->email, 'password' => 'wrong-password'])
+        ->assertTooManyRequests();
+});
 
-    $response->assertTooManyRequests();
+test('the identity endpoint returns the user with role and student profile', function () {
+    $student = makeStudent();
+
+    $this->actingAs($student->user)
+        ->getJson('/api/v1/user')
+        ->assertOk()
+        ->assertJsonPath('role', 'student')
+        ->assertJsonPath('student.reference_no', $student->reference_no)
+        ->assertJsonMissingPath('data');
+});
+
+test('guests get 401 from the identity endpoint', function () {
+    $this->getJson('/api/v1/user')->assertUnauthorized();
 });

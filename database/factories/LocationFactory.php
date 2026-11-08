@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Lookups\LocationType;
 use App\Models\Location;
+use App\Models\Lookups\LocationType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

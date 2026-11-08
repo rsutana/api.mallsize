@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Models\Lookups\EnrollmentStatus;
 use App\Models\BatchSet;
 use App\Models\Enrollment;
 use App\Models\Location;
+use App\Models\Lookups\EnrollmentStatus;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,11 +22,11 @@ class EnrollmentFactory extends Factory
         return [
             'student_id' => Student::factory(),
             'batch_set_id' => BatchSet::factory(),
-            'batch_id' => fn (array $attributes) => BatchSet::query()->findOrFail($attributes['batch_set_id'])->batch_id,
-            'course_id' => fn (array $attributes) => BatchSet::query()->with('batch')->findOrFail($attributes['batch_set_id'])->batch->course_id,
+            'batch_id' => fn (array $attributes) => BatchSet::query()->findOrFail((int) $attributes['batch_set_id'])->batch_id,
+            'course_id' => fn (array $attributes) => BatchSet::query()->with('batch')->findOrFail((int) $attributes['batch_set_id'])->batch->course_id,
             'location_id' => Location::factory(),
-            'fee' => fn (array $attributes) => BatchSet::query()->with('batch.course')->findOrFail($attributes['batch_set_id'])->batch->course->fee,
-            'min_down_payment' => fn (array $attributes) => BatchSet::query()->with('batch.course')->findOrFail($attributes['batch_set_id'])->batch->course->min_down_payment,
+            'fee' => fn (array $attributes) => BatchSet::query()->with('batch.course')->findOrFail((int) $attributes['batch_set_id'])->batch->course->fee,
+            'min_down_payment' => fn (array $attributes) => BatchSet::query()->with('batch.course')->findOrFail((int) $attributes['batch_set_id'])->batch->course->min_down_payment,
             'status' => EnrollmentStatus::ENROLLED,
             'expires_at' => null,
             'enrolled_at' => now(),

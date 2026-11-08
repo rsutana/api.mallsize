@@ -10,6 +10,8 @@ class CourseStatus extends LookupModel
     protected $table = 'course_statuses';
 
     public const OPEN = 'open';
+
     public const CLOSED = 'closed';
+
     public const ARCHIVED = 'archived';
 }

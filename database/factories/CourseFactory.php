@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Lookups\CourseStatus;
 use App\Models\Course;
+use App\Models\Lookups\CourseStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

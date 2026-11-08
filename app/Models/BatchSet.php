@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\Lookups\EnrollmentStatus;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
 use Database\Factories\BatchSetFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -10,8 +12,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\CarbonImmutable;
-use Carbon\CarbonInterface;
 
 /**
  * A schedule option inside a batch, with its own slots and training dates.

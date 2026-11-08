@@ -1,5 +1,10 @@
 <?php
 
+use App\Models\Batch;
+use App\Models\BatchSet;
+use App\Models\Course;
+use App\Models\Student;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -7,11 +12,6 @@ use Tests\TestCase;
 |--------------------------------------------------------------------------
 | Test Case
 |--------------------------------------------------------------------------
-|
-| The closure you provide to your test functions is always bound to a specific PHPUnit test
-| case class. By default, that class is "PHPUnit\Framework\TestCase". Of course, you may
-| need to change it using the "pest()" function to bind different classes or traits.
-|
 */
 
 pest()->extend(TestCase::class)
@@ -20,31 +20,45 @@ pest()->extend(TestCase::class)
 
 /*
 |--------------------------------------------------------------------------
-| Expectations
+| Helpers
 |--------------------------------------------------------------------------
-|
-| When you're writing tests, you often need to check that values meet certain conditions. The
-| "expect()" function gives you access to a set of "expectations" methods that you can use
-| to assert different things. Of course, you may extend the Expectation API at any time.
-|
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
-
-/*
-|--------------------------------------------------------------------------
-| Functions
-|--------------------------------------------------------------------------
-|
-| While Pest is very powerful out-of-the-box, you may have some testing code specific to your
-| project that you don't want to repeat in every file. Here you can also expose helpers as
-| global functions to help you to reduce the number of lines of code in your test files.
-|
-*/
-
-function something()
+/**
+ * An open course (fee ₱22,500 / min. down ₱5,000) with one batch and one set.
+ *
+ * @param  array<string, mixed>  $set
+ * @param  array<string, mixed>  $course
+ */
+function makeSet(array $set = [], array $course = []): BatchSet
 {
-    // ..
+    $course = Course::factory()->create($course);
+    $batch = Batch::factory()->for($course)->create();
+
+    return BatchSet::factory()->for($batch)->create($set)->load('batch.course');
+}
+
+function makeStudent(): Student
+{
+    return Student::factory()->create();
+}
+
+function staffUser(): User
+{
+    return User::factory()->staff()->create();
+}
+
+function adminUser(): User
+{
+    return User::factory()->admin()->create();
+}
+
+/**
+ * Headers that make Sanctum treat a test request as coming from the SPA.
+ *
+ * @return array<string, string>
+ */
+function spaHeaders(): array
+{
+    return ['Origin' => 'http://localhost:3000', 'Referer' => 'http://localhost:3000/', 'Accept' => 'application/json'];
 }

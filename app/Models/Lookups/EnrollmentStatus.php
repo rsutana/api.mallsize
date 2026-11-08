@@ -10,8 +10,11 @@ class EnrollmentStatus extends LookupModel
     protected $table = 'enrollment_statuses';
 
     public const PENDING_PAYMENT = 'pending_payment';
+
     public const ENROLLED = 'enrolled';
+
     public const CANCELLED = 'cancelled';
+
     public const EXPIRED = 'expired';
 
     /**

@@ -10,9 +10,13 @@ class PaymentStatus extends LookupModel
     protected $table = 'payment_statuses';
 
     public const PENDING = 'pending';
+
     public const PAID = 'paid';
+
     public const VERIFIED = 'verified';
+
     public const FAILED = 'failed';
+
     public const REJECTED = 'rejected';
 
     /**

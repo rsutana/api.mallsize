@@ -50,8 +50,8 @@ class RegistrationService
 
             $enrollments = $this->enrollments->createPending(
                 $student,
-                Location::query()->findOrFail($data['location_id']),
-                array_map('intval', $data['set_ids']),
+                Location::query()->findOrFail((int) $data['location_id']),
+                array_values(array_map('intval', $data['set_ids'])),
             );
 
             return ['user' => $user, 'enrollments' => $enrollments];

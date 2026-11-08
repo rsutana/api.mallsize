@@ -141,7 +141,7 @@ class Enrollment extends Model
     }
 
     /**
-     * Filters by derived payment status, matching {@see paymentStatus()}.
+     * Filters by derived payment status, matching {@see PaymentStatus()}.
      *
      * @param  Builder<self>  $query
      */

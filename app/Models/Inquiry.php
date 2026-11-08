@@ -15,6 +15,4 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $message
  */
 #[Fillable(['name', 'mobile', 'email', 'message'])]
-class Inquiry extends Model
-{
-}
+class Inquiry extends Model {}

@@ -10,5 +10,6 @@ class Sex extends LookupModel
     protected $table = 'sexes';
 
     public const MALE = 'male';
+
     public const FEMALE = 'female';
 }

@@ -10,7 +10,9 @@ class UserRole extends LookupModel
     protected $table = 'user_roles';
 
     public const STUDENT = 'student';
+
     public const STAFF = 'staff';
+
     public const ADMIN = 'admin';
 
     /**

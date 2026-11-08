@@ -9,6 +9,7 @@ use App\Models\Lookups\EnrollmentPaymentStatus;
 use App\Models\Lookups\EnrollmentStatus;
 use App\Models\Lookups\GalleryTag;
 use App\Models\Lookups\LocationType;
+use App\Models\Lookups\LookupModel;
 use App\Models\Lookups\NewsCategory;
 use App\Models\Lookups\OrientationFormat;
 use App\Models\Lookups\OrientationLinkMode;
@@ -34,7 +35,7 @@ final class Lookups
     /**
      * Lookup tables exposed to the SPA, keyed by table name.
      *
-     * @var array<string, class-string<\App\Models\Lookups\LookupModel>>
+     * @var array<string, class-string<LookupModel>>
      */
     public const TABLES = [
         'user_roles' => UserRole::class,

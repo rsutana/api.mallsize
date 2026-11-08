@@ -10,10 +10,15 @@ class PaymentMethod extends LookupModel
     protected $table = 'payment_methods';
 
     public const GCASH = 'gcash';
+
     public const MAYA = 'maya';
+
     public const QRPH = 'qrph';
+
     public const SHOPEEPAY = 'shopeepay';
+
     public const CARD = 'card';
+
     public const BANK_TRANSFER = 'bank_transfer';
 
     /**

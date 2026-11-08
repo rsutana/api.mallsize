@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Lookups\BatchStatus;
 use App\Models\Batch;
 use App\Models\Course;
+use App\Models\Lookups\BatchStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
