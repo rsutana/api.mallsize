@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'home' => '/dashboard',
+    'home' => '/',
 
     /*
     |--------------------------------------------------------------------------
@@ -129,7 +129,7 @@ return [
     |
     */
 
-    'views' => true,
+    'views' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -143,9 +143,8 @@ return [
     */
 
     'features' => [
-        Features::registration(),
         Features::resetPasswords(),
-        Features::emailVerification(),
+        Features::updatePasswords(),
     ],
 
 ];
