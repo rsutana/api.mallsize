@@ -83,6 +83,41 @@ test('enrolled students can be filtered and exported', function () {
     expect($csv)->toContain('Reference,Name,Email')->toContain($dp->student->reference_no)->not->toContain($full->student->reference_no);
 });
 
+test('enrolled students are paginated 25 per page in a stable order', function () {
+    Enrollment::factory()->count(27)->create(['enrolled_at' => now()->startOfMinute()]);
+    $staff = staffUser();
+
+    $first = $this->actingAs($staff)->getJson('/api/v1/admin/enrollments')
+        ->assertOk()
+        ->assertJsonCount(25, 'data')
+        ->assertJsonPath('meta.per_page', 25)
+        ->assertJsonPath('meta.total', 27)
+        ->assertJsonPath('meta.last_page', 2);
+    $second = $this->actingAs($staff)->getJson('/api/v1/admin/enrollments?page=2')
+        ->assertOk()
+        ->assertJsonCount(2, 'data');
+
+    $ids = [...$first->json('data.*.id'), ...$second->json('data.*.id')];
+    expect(array_unique($ids))->toHaveCount(27);
+});
+
+test('news posts and orientations are paginated 15 per page', function () {
+    NewsPost::factory()->count(16)->create();
+    Orientation::factory()->count(16)->create();
+    $staff = staffUser();
+
+    foreach (['news-posts', 'orientations'] as $resource) {
+        $this->actingAs($staff)->getJson("/api/v1/admin/{$resource}")
+            ->assertOk()
+            ->assertJsonCount(15, 'data')
+            ->assertJsonPath('meta.per_page', 15)
+            ->assertJsonPath('meta.total', 16);
+        $this->actingAs($staff)->getJson("/api/v1/admin/{$resource}?page=2")
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+    }
+});
+
 test('balance reminders go to students with a balance', function () {
     $enrollment = paidEnrollment();
     paidEnrollment(2_250_000);

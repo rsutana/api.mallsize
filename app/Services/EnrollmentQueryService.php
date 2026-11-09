@@ -35,6 +35,8 @@ class EnrollmentQueryService
                         ->orWhereHas('user', fn (Builder $u) => $u->where('email', 'like', $like));
                 });
             })
-            ->latest('enrolled_at');
+            ->latest('enrolled_at')
+            // Tie-breaker: many rows share enrolled_at, and pagination needs a stable order.
+            ->orderByDesc('id');
     }
 }

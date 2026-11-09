@@ -12,10 +12,12 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EnrollmentController extends Controller
 {
+    public const PER_PAGE = 25;
+
     public function index(IndexAdminEnrollmentRequest $request, EnrollmentQueryService $query): AnonymousResourceCollection
     {
         return EnrollmentResource::collection(
-            $query->filtered($request->validated())->paginate($request->integer('per_page', 50)),
+            $query->filtered($request->validated())->paginate($request->integer('per_page', self::PER_PAGE)),
         );
     }
 
