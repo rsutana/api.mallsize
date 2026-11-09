@@ -20,6 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/v1/webhooks/*',
         ]);
 
+        // API-only app: guests get a 401 JSON response, never a redirect.
+        $middleware->redirectGuestsTo(fn (): ?string => null);
+
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
         ]);
