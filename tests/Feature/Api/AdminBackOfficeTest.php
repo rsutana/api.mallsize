@@ -2,6 +2,8 @@
 
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Lookups\CourseStatus;
+use App\Models\Lookups\EnrollmentStatus;
 use App\Models\Lookups\PaymentStatus;
 use App\Models\NewsPost;
 use App\Models\Orientation;
@@ -46,6 +48,24 @@ test('overview reports KPIs', function () {
         ->assertJsonPath('data.collected', 500_000)
         ->assertJsonPath('data.outstanding', 1_750_000)
         ->assertJsonCount(1, 'data.due_soon');
+});
+
+test('overview reports seat usage per course, batch and set', function () {
+    $enrollment = paidEnrollment();
+    Enrollment::factory()->pending()->create(['batch_set_id' => $enrollment->batch_set_id]);
+    Enrollment::factory()->create(['batch_set_id' => $enrollment->batch_set_id, 'status' => EnrollmentStatus::EXPIRED]);
+    Course::factory()->create(['status' => CourseStatus::ARCHIVED]);
+
+    $seats = ['slots' => 20, 'enrolled_count' => 1, 'pending_count' => 1, 'slots_taken' => 2, 'slots_left' => 18];
+
+    $this->actingAs(staffUser())->getJson('/api/v1/admin/overview')
+        ->assertOk()
+        ->assertJsonCount(1, 'data.courses')
+        ->assertJsonPath('data.courses.0.id', $enrollment->course_id)
+        ->assertJson(['data' => ['courses' => [[
+            ...$seats,
+            'batches' => [[...$seats, 'sets' => [['id' => $enrollment->batch_set_id, ...$seats]]]],
+        ]]]]);
 });
 
 test('staff can verify and reject payments', function () {

@@ -22,6 +22,7 @@ class AdminOverviewResource extends JsonResource
             'outstanding' => $this->resource['outstanding'],
             'due_soon' => EnrollmentResource::collection($this->resource['due_soon']),
             'notifications' => NotificationLogResource::collection($this->resource['notifications']),
+            'courses' => CourseCapacityResource::collection($this->resource['courses']),
         ];
     }
 }

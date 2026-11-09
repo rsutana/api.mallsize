@@ -2,12 +2,17 @@
 
 namespace App\Services;
 
+use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Lookups\CourseStatus;
 use App\Models\Lookups\EnrollmentPaymentStatus;
 use App\Models\Lookups\EnrollmentStatus;
 use App\Models\Lookups\PaymentStatus;
 use App\Models\NotificationLog;
 use App\Models\Payment;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AdminOverviewService
 {
@@ -35,6 +40,26 @@ class AdminOverviewService
                 ->limit(10)
                 ->get(),
             'notifications' => NotificationLog::query()->latest('sent_at')->limit(10)->get(),
+            'courses' => $this->capacity(),
         ];
+    }
+
+    /**
+     * Non-archived courses with every batch and set, counting enrolled students
+     * and slots held (enrolled + unexpired pending) per set.
+     *
+     * @return Collection<int, Course>
+     */
+    public function capacity(): Collection
+    {
+        return Course::query()
+            ->where('status', '!=', CourseStatus::ARCHIVED)
+            ->ordered()
+            ->with(['batches.sets' => function (HasMany $sets): void {
+                $sets->withSlotsTaken()->withCount([
+                    'enrollments as enrolled_count' => fn (Builder $e) => $e->where('status', EnrollmentStatus::ENROLLED),
+                ]);
+            }])
+            ->get();
     }
 }
