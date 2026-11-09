@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\NewsPost\IndexNewsPostRequest;
 use App\Http\Requests\NewsPost\SaveNewsPostRequest;
 use App\Http\Resources\NewsPostResource;
 use App\Models\NewsPost;
@@ -13,9 +14,16 @@ use Illuminate\Http\Response;
 
 class NewsPostController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public const PER_PAGE = 15;
+
+    public function index(IndexNewsPostRequest $request): AnonymousResourceCollection
     {
-        return NewsPostResource::collection(NewsPost::query()->orderByDesc('published_on')->orderByDesc('id')->get());
+        return NewsPostResource::collection(
+            NewsPost::query()
+                ->orderByDesc('published_on')
+                ->orderByDesc('id')
+                ->paginate($request->integer('per_page', self::PER_PAGE)),
+        );
     }
 
     public function store(SaveNewsPostRequest $request, NewsPostService $posts): JsonResponse

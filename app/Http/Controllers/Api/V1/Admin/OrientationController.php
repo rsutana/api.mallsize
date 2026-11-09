@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Orientation\IndexOrientationRequest;
 use App\Http\Requests\Orientation\SaveOrientationRequest;
 use App\Http\Resources\OrientationResource;
 use App\Models\Orientation;
@@ -13,9 +14,17 @@ use Illuminate\Http\Response;
 
 class OrientationController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public const PER_PAGE = 15;
+
+    public function index(IndexOrientationRequest $request): AnonymousResourceCollection
     {
-        return OrientationResource::collection(Orientation::query()->with('course')->orderBy('date')->get());
+        return OrientationResource::collection(
+            Orientation::query()
+                ->with('course')
+                ->orderBy('date')
+                ->orderBy('id')
+                ->paginate($request->integer('per_page', self::PER_PAGE)),
+        );
     }
 
     public function store(SaveOrientationRequest $request, OrientationService $orientations): JsonResponse
